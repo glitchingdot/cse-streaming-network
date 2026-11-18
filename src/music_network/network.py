@@ -59,16 +59,20 @@ def make_collaboration_network(artist_id: str, token: str) -> nx.Graph:
 def add_history_to_graph(G):
     df = history.load_history()
 
-    sizes = history.plays_per_container(df, "master_metadata_album_artist_name")
+    artist_container_name = "master_metadata_album_artist_name"
 
-    past_artists = df["master_metadata_album_artist_name"].unique()
-    sizes = sizes.set_index("master_metadata_album_artist_name")
+    sizes = history.plays_per_container(df, artist_container_name)
+
+    past_artists = df[artist_container_name].unique()
+    sizes = sizes.set_index(artist_container_name)
 
     for artist in G.nodes():
         if artist in past_artists:
             G.nodes[artist]["value"] = int(sizes.loc[artist, "size"])
         else:
+            # Have not steamed this artists' primary songs before
             G.nodes[artist]["value"] = 0
+            G.nodes[artist]["color"] = "red"
 
 
 def layout_to_ply(G: nx.Graph, pos:dict, filename:str = "network"):
@@ -109,6 +113,8 @@ def layout_to_ply(G: nx.Graph, pos:dict, filename:str = "network"):
         for artist in keys:
             f.write(artist + "\n")
 
+def remove_leaf_nodes(G: nx.Graph):
+    G.remove_nodes_from([node for node, degree in G.degree() if degree == 1])
 
 if __name__ == "__main__":
     token = api.authorize_client_credentials_flow()
@@ -122,7 +128,7 @@ if __name__ == "__main__":
             "6O4EGCCb6DoIiR6B1QCQgp", # Toro Y Moi
             "07UJz804RJxqNvxFXC3h9H", # Sam Gelliatry
             "7t8sK02zmZ9f6e6eJA9oSJ", # James Ivy
-            "1t20wYnTiAT0Bs7H1hv9Wt", # EDEN
+            #"1t20wYnTiAT0Bs7H1hv9Wt", # EDEN
             "7HfUJxeVTgrvhk0eWHFzV7", # underscores
             "2HkSsS8O2U2gPhnCGVN5vn", # Between Friends
             "0fGcIStdT1OpFFhOC7Wp36", # Teezo Touchdown
@@ -135,11 +141,11 @@ if __name__ == "__main__":
             "4oLeXFyACqeem2VImYeBFe", # Fred.. again,
             "4tZwfgrHOc3mvqYlEYSvVi", # Daft Punk
             "2NFrAuh8RQdQoS7iYFbckw", # The Midnight
-            "3MekbRujJg5VZThubOlrkR", # Ninajirachi
-            "49tQo2QULno7gxHutgccqF", # LANY
-            "3mIj9lX2MWuHmhNCA7LSCW", # The 1975
-            "1N9JxmOPJqhMCw219uoEi8", # Atlas in Motion
-            "6R1kfr0GIWnwxY4zW11Vag", # Frost Children
+            #"3MekbRujJg5VZThubOlrkR", # Ninajirachi (RATE LIMIT NOT IN CACHE)
+            #"49tQo2QULno7gxHutgccqF", # LANY
+            #"3mIj9lX2MWuHmhNCA7LSCW", # The 1975
+            #"1N9JxmOPJqhMCw219uoEi8", # Atlas in Motion
+            #"6R1kfr0GIWnwxY4zW11Vag", # Frost Children (RATE LIMIT NOT IN CACHE)
         ]
 
         G = nx.empty_graph()
@@ -149,6 +155,8 @@ if __name__ == "__main__":
         if(len(G) < 1):
             print("Recieved empty graph!")
 
+        remove_leaf_nodes(G=G)
+
         add_history_to_graph(G=G)
 
         pos = nx.spring_layout(G, dim=3, method="energy")
@@ -156,5 +164,8 @@ if __name__ == "__main__":
 
         net = Network(notebook=False, height="1500px", select_menu=True)
         net.from_nx(G)
-    
-        net.save_graph("nx.html")
+
+        filepath = "nx.html"
+
+        print(f"Saved graph to {filepath}")
+        net.save_graph(filepath)

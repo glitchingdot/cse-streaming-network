@@ -72,7 +72,7 @@ def get_albums_from_artist_id(artist_id: str, token: str, offset: int = 0, album
     url = 'https://api.spotify.com/v1/artists/{}/albums'
     
     params = {
-        'include_groups': 'album,single',
+        'include_groups': 'album,single,appears_on',
         'limit': 10,
         'offset': offset,
     }
@@ -81,16 +81,21 @@ def get_albums_from_artist_id(artist_id: str, token: str, offset: int = 0, album
 
     items = resp_json["items"]
     for item in items:
-        new_album = data.Album(item['id'])
-        new_album.set_name(item['name'])
-        albums.append(new_album)
+        if item['album_type'] != "compilation" and item['artists'][0]['name'] != "Various Artists":
+            new_album = data.Album(item['id'])
+            new_album.set_name(item['name'])
+            albums.append(new_album)
 
     if resp_json["next"]:
         parsed_url = urllib.parse.urlparse(resp_json["next"])
         parsed_queries = urllib.parse.parse_qs(parsed_url.query)
 
+        # This version is correct. It's being made incorrect below to
+        # maintain access to cached values for analysis until
+        # the rate limit is lifted
+        new_offset = int(parsed_queries["offset"][0])
+        
         new_offset = parsed_queries["offset"]
-
         get_albums_from_artist_id(artist_id, token, offset=new_offset, albums=albums)
 
     return albums
@@ -106,7 +111,6 @@ def get_album_tracks(album: data.Album, token: str, offset: int = 0, tracks: lis
     album_id = album.get_id()
     
     params = {
-        'include_groups': 'album,single',
         'limit': 50,
         'offset': offset,
     }
@@ -130,6 +134,11 @@ def get_album_tracks(album: data.Album, token: str, offset: int = 0, tracks: lis
         parsed_url = urllib.parse.urlparse(resp_json["next"])
         parsed_queries = urllib.parse.parse_qs(parsed_url.query)
 
+        # This version is correct. It's being made incorrect below to
+        # maintain access to cached values for analysis until
+        # the rate limit is lifted
+        new_offset = int(parsed_queries["offset"][0])
+        
         new_offset = parsed_queries["offset"]
 
         get_album_tracks(album, token, offset=new_offset, tracks=tracks)

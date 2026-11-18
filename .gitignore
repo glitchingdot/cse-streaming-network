@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+lib
+
+# Development environment
+.vscode
+*.env
+nx.html
+.DS_Store
+
+# Spotify data
+Spotify Extended Streaming History
+cache/
+full.csv
+
+# 3D Files
+export/

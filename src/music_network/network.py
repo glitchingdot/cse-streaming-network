@@ -68,7 +68,8 @@ def make_collaboration_network(artist_id: str, token: str) -> nx.Graph:
     print(f"Making network for {artist_id}")
 
     df = make_collaboration_df(artist_id, token)
-    G = nx.from_pandas_edgelist(df, source='artist_name', target="collaborator_name", edge_attr="track_name")
+    df = df.rename({"track_name": "title", "play_count": "value"})
+    G = nx.from_pandas_edgelist(df, source='artist_name', target="collaborator_name", edge_key="track_id", edge_attr=["title", "value"])
 
     return G
 
@@ -171,7 +172,7 @@ if __name__ == "__main__":
         if(len(G) < 1):
             print("Recieved empty graph!")
 
-        #remove_leaf_nodes(G=G)
+        remove_leaf_nodes(G=G)
 
         add_history_to_graph(G=G)
 

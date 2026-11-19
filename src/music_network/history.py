@@ -6,8 +6,8 @@ import seaborn as sns
 from typing import Literal
 
 
-def load_history() -> pd.DataFrame:
-    folder = Path("Spotify Extended Streaming History")
+def load_history(path: str) -> pd.DataFrame:
+    folder = Path(path)
 
     json_files = list(folder.glob("Streaming_History_Audio*.json"))
 

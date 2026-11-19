@@ -30,12 +30,10 @@ def make_collaboration_df(artist_id: str, token: str):
 
     rows = []
 
-    hist_df = history.load_history()
+    hist_df = history.load_history("Spotify Extended Streaming History")
     track_container_id = "spotify_track_uri"
     sizes = history.plays_per_container(hist_df, track_container_id)
     sizes = sizes.set_index(track_container_id)
-
-    # spotify:track:2ewEh7LuvToYyGHq7yT8N1
 
     for track in tracks:
         collaborators = track.get_artists()
@@ -92,7 +90,7 @@ def make_collaboration_network(artist_id: str, token: str) -> nx.Graph:
 
 
 def add_history_to_graph(G):
-    df = history.load_history()
+    df = history.load_history("Spotify Extended Streaming History")
 
     artist_container_name = "master_metadata_album_artist_name"
 

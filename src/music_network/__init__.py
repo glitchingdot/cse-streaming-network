@@ -42,7 +42,7 @@ def visualize_collaboration_counts(df: pd.DataFrame):
     plt.show()
 
 
-if __name__ == "__main__":
+def main():
     token = api.authorize_client_credentials_flow()
 
     if token:
@@ -77,3 +77,7 @@ if __name__ == "__main__":
         df = collaboration.make_artist_df(artists, token)
         network.make_pruned_network(df, "nx.html")
         visualize_collaboration_counts(df)
+
+
+if __name__ == "__main__":
+    main()

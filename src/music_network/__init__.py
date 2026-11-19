@@ -1,14 +1,24 @@
+"""
+Jack K
+This program manages visualization functions to visualize Spotify data.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import collaboration
+import network
 import api
 
 sns.set_theme()
 
 
 def visualize_collaboration_counts(df: pd.DataFrame):
+    """
+    Takes in a pandas DataFrame and displays a bar chart the visualizes
+    artist collaboration pairs.
+    """
     partners = df.groupby(
         ["artist_name", "collaborator_name"], as_index=False
     ).size()
@@ -65,5 +75,5 @@ if __name__ == "__main__":
         ]
 
         df = collaboration.make_artist_df(artists, token)
-        # make_pruned_network(df, "nx.html")
+        network.make_pruned_network(df, "nx.html")
         visualize_collaboration_counts(df)

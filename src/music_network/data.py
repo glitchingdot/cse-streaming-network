@@ -1,3 +1,9 @@
+"""
+Jack K
+This module implements class frameworks for Spotify data.
+"""
+
+
 class Artist:
     def __init__(self, artist_id) -> None:
         self._name: str = ""

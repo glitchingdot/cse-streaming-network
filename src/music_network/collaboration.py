@@ -1,3 +1,9 @@
+"""
+Jack K
+This module implements DataFrame creation from Spotify listening and
+artist collaboration data.
+"""
+
 import pandas as pd
 
 import api

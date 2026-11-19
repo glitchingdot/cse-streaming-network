@@ -1,3 +1,10 @@
+"""
+Jack K
+This program implements history loading and summarization functions from
+Spotify extended streaming history data files.
+"""
+
+
 import pandas as pd
 from pathlib import Path
 

@@ -1,3 +1,10 @@
+"""
+Jack K
+This program implements testing of Spotify data loading and processing
+from API and listening files.
+"""
+
+
 import history
 import collaboration
 

@@ -1,3 +1,10 @@
+"""
+Jack K
+This module implements network graph creation and visualization of
+Spotify collaboration and history data.
+"""
+
+
 import pandas as pd
 import networkx as nx
 from pyvis.network import Network

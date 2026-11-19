@@ -1,3 +1,8 @@
+"""
+Jack K
+This module implements API calls and authentication with Spotify's API
+"""
+
 import requests
 import os
 import base64
@@ -10,6 +15,10 @@ import cache
 
 
 def format_client_information():
+    """
+    Imports and formats environment variables for use in authentication
+    with Spotify's API.
+    """
     load_dotenv()
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
@@ -25,23 +34,17 @@ def format_client_information():
     return result
 
 
-def create_headers():
-    result = {
-        "Authorization": format_client_information(),
-        "Content-Type": "application/x-www-form-urlencoded",
-    }
-
-    return result
-
-
 def authorize_client_credentials_flow() -> str | None:
     """
     Authorizes with Spotify's API. Returns
     an access token to provide with future
     calls.
     """
+    headers = {
+        "Authorization": format_client_information(),
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
 
-    headers = create_headers()
     data = {"grant_type": "client_credentials"}
 
     response = requests.post(
@@ -58,12 +61,22 @@ def authorize_client_credentials_flow() -> str | None:
 
 
 def get_artist_from_id(artist_id: str, token: str):
+    """
+    Takes in an artist id and returns an artist's API JSON either from
+    the Spotify API or from cached files. Requires an authentication token as
+    a string.
+    """
     return cache.make_cached_call(
         "https://api.spotify.com/v1/artists/{}", artist_id, token
     )
 
 
 def get_track_from_id(track_id: str, token):
+    """
+    Takes in an album id and returns the album's API JSON either from
+    the Spotify API or from cached files. Requires an authentication token as
+    a string.
+    """
     return cache.make_cached_call(
         "https://api.spotify.com/v1/tracks/{}", track_id, token
     )
@@ -73,9 +86,9 @@ def get_albums_from_artist_id(
     artist_id: str, token: str, offset: int = 0, albums: list[data.Album] = []
 ):
     """
-    Calls Spotify's Get Albums From Artist endpoint to get all Albums
-    owned by an artist. Returns a list of Albums containing the id and name
-    of each album owned by the artist.
+    Gets all Albums owned by a given artist_id either from the API or local
+    cache. Returns a list of Albums containing the id and name of each album
+    owned by the artist. Requires an authentication token as a string.
     """
 
     url = "https://api.spotify.com/v1/artists/{}/albums"
@@ -122,9 +135,9 @@ def get_album_tracks(
     tracks: list[data.Track] = [],
 ):
     """
-    Calls Spotify's Get Album Tracks endpoint to get all Tracks
-    within an album. Returns a list of Tracks containing the id, name, and
-    artist(s) related to the track.
+    Gets all tracks owned by a given Album object either from the API or local
+    cache. Returns a list of Tracks. Requires an authentication token as
+    a string.
     """
 
     url = "https://api.spotify.com/v1/albums/{}/tracks"

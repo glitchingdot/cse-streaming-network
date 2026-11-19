@@ -1,3 +1,8 @@
+"""
+Jack K
+This module implements API caching
+"""
+
 import requests
 import json
 from pathlib import Path
@@ -7,6 +12,11 @@ from typing import Any
 def make_cached_call(
     url: str, arg: str, token: str, params: dict[str, str] = {}
 ) -> dict[str, Any]:
+    """
+    Takes in a url, a formatting argument for the url, and an auth token
+    as strings. Can additionally recieve additional params. Returns either
+    JSON from a GET request to a given URL, or a local cached copy.
+    """
     url = url.format(arg)
 
     qstr = ""

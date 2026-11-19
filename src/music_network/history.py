@@ -5,6 +5,9 @@ import seaborn as sns
 
 from typing import Literal
 
+def uri_to_id(uri: str):
+    return uri.split(":")[2]
+
 def load_history() -> pd.DataFrame:
     folder = Path("Spotify Extended Streaming History")
 
@@ -15,6 +18,9 @@ def load_history() -> pd.DataFrame:
     for file in json_files:
         added_data = pd.read_json(file)
         full_data = pd.concat([full_data, added_data], axis=0, ignore_index=True)
+
+    full_data = full_data.dropna(subset="spotify_track_uri")
+    full_data["track_id"] = full_data["spotify_track_uri"].apply(uri_to_id)
 
     return full_data
 

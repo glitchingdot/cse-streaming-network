@@ -28,20 +28,37 @@ def make_collaboration_df(artist_id: str, token: str):
 
     rows = []
 
+    hist_df = history.load_history()
+    artist_container_name = "track_id"
+    sizes = history.plays_per_container(hist_df, artist_container_name)
+    sizes = sizes.set_index(artist_container_name)
+
     for track in tracks:
             collaborators = track.get_artists()
             for collaborator in collaborators:
                 if collaborator.get_id() != artist_id:
-                    rows.append(
-                        [collaborator.get_id(), collaborator.get_name(), track.get_name()]
-                    )
+                    play_count = 0
+                    if track.get_id() in sizes.index:
+                        print("Found song!")
+                        play_count = sizes.loc[track.get_id()].item()
+
+                    row_data = [
+                        collaborator.get_id(), 
+                        collaborator.get_name(), 
+                        track.get_id(), 
+                        track.get_name(), 
+                        play_count
+                    ]
+                    
+                    rows.append(row_data)
 
     df = pd.DataFrame(rows)
 
     if df.empty != True:
-        df.columns = ['collaborator_id', 'collaborator_name', 'track_name']
+        df.columns = ['collaborator_id', 'collaborator_name', 'track_id', 'track_name', 'play_count']
         df['artist_id'] = artist_id
         df['artist_name'] = artist_name
+        df = df.drop_duplicates()
 
     return df
 
@@ -52,7 +69,7 @@ def make_collaboration_network(artist_id: str, token: str) -> nx.Graph:
     print(f"Making network for {artist_id}")
 
     df = make_collaboration_df(artist_id, token)
-    G = nx.from_pandas_edgelist(df, source='artist_name', target="collaborator_name")
+    G = nx.from_pandas_edgelist(df, source='artist_name', target="collaborator_name", edge_attr="track_name")
 
     return G
 
@@ -155,7 +172,7 @@ if __name__ == "__main__":
         if(len(G) < 1):
             print("Recieved empty graph!")
 
-        remove_leaf_nodes(G=G)
+        #remove_leaf_nodes(G=G)
 
         add_history_to_graph(G=G)
 

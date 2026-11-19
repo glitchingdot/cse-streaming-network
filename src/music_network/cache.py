@@ -3,7 +3,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-def make_cached_call(url: str, arg: str, token: str, params:dict[str, str] = {}) -> dict[str, Any] :
+
+def make_cached_call(
+    url: str, arg: str, token: str, params: dict[str, str] = {}
+) -> dict[str, Any]:
     url = url.format(arg)
 
     qstr = ""
@@ -14,9 +17,9 @@ def make_cached_call(url: str, arg: str, token: str, params:dict[str, str] = {})
 
     cache_path = Path(f"cache/{url.split("v1/")[1]}{qstr}.json")
 
-    headers = {'Authorization': f'Bearer {token}'}
+    headers = {"Authorization": f"Bearer {token}"}
 
-    if(cache_path.exists()):
+    if cache_path.exists():
         with open(cache_path, "r") as f:
             return json.load(f)
     else:
@@ -30,8 +33,8 @@ def make_cached_call(url: str, arg: str, token: str, params:dict[str, str] = {})
                 return {
                     "Status Code": resp.status_code,
                     "Reason": resp.reason,
-                    "URL": url
-                    }
+                    "URL": url,
+                }
 
             data = resp.json()
             json.dump(data, f)

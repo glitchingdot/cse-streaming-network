@@ -5,8 +5,6 @@ import seaborn as sns
 
 from typing import Literal
 
-def uri_to_id(uri: str):
-    return uri.split(":")[2]
 
 def load_history() -> pd.DataFrame:
     folder = Path("Spotify Extended Streaming History")
@@ -17,12 +15,14 @@ def load_history() -> pd.DataFrame:
 
     for file in json_files:
         added_data = pd.read_json(file)
-        full_data = pd.concat([full_data, added_data], axis=0, ignore_index=True)
+        full_data = pd.concat(
+            [full_data, added_data], axis=0, ignore_index=True
+        )
 
     full_data = full_data.dropna(subset="spotify_track_uri")
-    full_data["track_id"] = full_data["spotify_track_uri"].apply(uri_to_id)
 
     return full_data
+
 
 def plays_per_container(df: pd.DataFrame, group_filter: str) -> pd.DataFrame:
     sorted_sizes = df.groupby(group_filter, as_index=False).size()
@@ -30,7 +30,12 @@ def plays_per_container(df: pd.DataFrame, group_filter: str) -> pd.DataFrame:
 
     return sorted_sizes
 
-def visualize_top_container(df: pd.DataFrame, container: Literal["artist", "album", "track"], count: int):
+
+def visualize_top_container(
+    df: pd.DataFrame,
+    container: Literal["artist", "album", "track"],
+    count: int,
+):
     group_filter = "master_metadata_"
 
     if container == "artist":
@@ -40,21 +45,15 @@ def visualize_top_container(df: pd.DataFrame, container: Literal["artist", "albu
     else:
         group_filter += "track_name"
 
-    
     limited = plays_per_container(df, group_filter).head(count)
 
     sns.set_theme()
 
-    g = sns.catplot(data=limited.head(count), kind="bar", x='size', y=group_filter)
+    g = sns.catplot(
+        data=limited.head(count), kind="bar", x="size", y=group_filter
+    )
 
     g.set_axis_labels(y_var=container)
     g.tight_layout()
 
     plt.show()
-
-if __name__ == "__main__":
-    history = load_history()
-
-    print(history.head(1))
-
-    visualize_top_container(history, "artist", 50)

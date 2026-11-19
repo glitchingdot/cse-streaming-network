@@ -13,7 +13,7 @@ lib
 # Development environment
 .vscode
 *.env
-nx.html
+nx*.html
 .DS_Store
 
 # Spotify data

@@ -1,9 +1,5 @@
 import pandas as pd
 from pathlib import Path
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-from typing import Literal
 
 
 def load_history(path: str) -> pd.DataFrame:
@@ -29,31 +25,3 @@ def plays_per_container(df: pd.DataFrame, group_filter: str) -> pd.DataFrame:
     sorted_sizes = sorted_sizes.sort_values("size", ascending=False)
 
     return sorted_sizes
-
-
-def visualize_top_container(
-    df: pd.DataFrame,
-    container: Literal["artist", "album", "track"],
-    count: int,
-):
-    group_filter = "master_metadata_"
-
-    if container == "artist":
-        group_filter += "album_artist_name"
-    elif container == "album":
-        group_filter += "album_album_name"
-    else:
-        group_filter += "track_name"
-
-    limited = plays_per_container(df, group_filter).head(count)
-
-    sns.set_theme()
-
-    g = sns.catplot(
-        data=limited.head(count), kind="bar", x="size", y=group_filter
-    )
-
-    g.set_axis_labels(y_var=container)
-    g.tight_layout()
-
-    plt.show()

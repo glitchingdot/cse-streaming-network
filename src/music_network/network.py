@@ -45,7 +45,7 @@ def make_collaboration_df(artist_id: str, token: str):
                         collaborator.get_id(), 
                         collaborator.get_name(), 
                         track.get_id(), 
-                        track.get_name(), 
+                        f"{track.get_name()} - {play_count}", 
                         play_count
                     ]
                     
@@ -68,7 +68,7 @@ def make_collaboration_network(artist_id: str, token: str) -> nx.Graph:
     print(f"Making network for {artist_id}")
 
     df = make_collaboration_df(artist_id, token)
-    df = df.rename({"track_name": "title", "play_count": "value"})
+    df = df.rename(columns={"track_name": "title", "play_count": "value"})
     G = nx.from_pandas_edgelist(df, source='artist_name', target="collaborator_name", edge_key="track_id", edge_attr=["title", "value"])
 
     return G

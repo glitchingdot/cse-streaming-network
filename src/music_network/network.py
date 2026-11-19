@@ -39,7 +39,6 @@ def make_collaboration_df(artist_id: str, token: str):
                 if collaborator.get_id() != artist_id:
                     play_count = 0
                     if track.get_id() in sizes.index:
-                        print("Found song!")
                         play_count = sizes.loc[track.get_id()].item()
 
                     row_data = [

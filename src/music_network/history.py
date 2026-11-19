@@ -10,6 +10,10 @@ from pathlib import Path
 
 
 def load_history(path: str) -> pd.DataFrame:
+    """
+    Loads Spotify listening history from a local folder at a given filepath
+    as a string. Returns a pandas DataFrame containing the loaded data.s
+    """
     folder = Path(path)
 
     json_files = list(folder.glob("Streaming_History_Audio*.json"))
@@ -28,6 +32,10 @@ def load_history(path: str) -> pd.DataFrame:
 
 
 def plays_per_container(df: pd.DataFrame, group_filter: str) -> pd.DataFrame:
+    """
+    Takes in a dataframe and a filter to group the data by, and returns
+    the grouped data as a sorted dataframe.
+    """
     sorted_sizes = df.groupby(group_filter, as_index=False).size()
     sorted_sizes = sorted_sizes.sort_values("size", ascending=False)
 

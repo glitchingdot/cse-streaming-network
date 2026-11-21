@@ -10,6 +10,7 @@ import networkx as nx
 from pyvis.network import Network
 
 import history
+import api
 
 
 def node_attributes_from_history(G: nx.Graph) -> None:
@@ -47,7 +48,24 @@ def remove_leaf_nodes(G: nx.Graph):
     )
 
 
-def make_pruned_network(df: pd.DataFrame, filepath: str):
+def make_collections(G: nx.Graph):
+    generator = nx.community.girvan_newman(G)
+    foo = None
+
+    for _ in range(1):
+        foo = next(generator)
+
+    for community_id, nodes in enumerate(foo):
+        for node in nodes:
+            G.nodes[node]["group"] = community_id
+            degree = G.degree[node]
+            G.nodes[node]["value"] = degree
+            G.nodes[node][
+                "title"
+            ] = f"{node} | Community {community_id} | Degree {degree}"
+
+
+def make_pruned_network(df: pd.DataFrame, filepath: str, token: str):
     """
     Takes in a collaboration DataFrame and filepath and saves a
     pyvis interactive network visualization to the filepath. The
@@ -58,19 +76,30 @@ def make_pruned_network(df: pd.DataFrame, filepath: str):
 
     G = nx.from_pandas_edgelist(
         df,
-        source="artist_name",
-        target="collaborator_name",
+        source="artist_id",
+        target="collaborator_id",
         edge_key="track_id",
-        edge_attr=["title", "value"],
+        edge_attr=["title", "value",],
     )
+
+    for node in G.nodes:
+        resp = api.get_artist_from_id(node, token)
+        G.nodes[node]["label"] = resp['name']
+
+        if 'images' in resp.keys() and len(resp['images']) > 0:
+            G.nodes[node]["image"] = resp['images'][0]['url']
+            G.nodes[node]["shape"] = "circularImage"
 
     if len(G) < 1:
         print("Recieved empty graph!")
 
     remove_leaf_nodes(G=G)
+    make_collections(G)
 
     net = Network(notebook=False, height="1500px", select_menu=True)
     net.from_nx(G)
+    net.show_buttons()
+    net.force_atlas_2based()
 
     print(f"Saved graph to {filepath}")
     net.save_graph(filepath)

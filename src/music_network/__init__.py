@@ -54,7 +54,6 @@ def main():
             "6O4EGCCb6DoIiR6B1QCQgp",  # Toro Y Moi
             "07UJz804RJxqNvxFXC3h9H",  # Sam Gelliatry
             "7t8sK02zmZ9f6e6eJA9oSJ",  # James Ivy
-            # "1t20wYnTiAT0Bs7H1hv9Wt", # EDEN
             "7HfUJxeVTgrvhk0eWHFzV7",  # underscores
             "2HkSsS8O2U2gPhnCGVN5vn",  # Between Friends
             "0fGcIStdT1OpFFhOC7Wp36",  # Teezo Touchdown
@@ -67,15 +66,15 @@ def main():
             "4oLeXFyACqeem2VImYeBFe",  # Fred.. again,
             "4tZwfgrHOc3mvqYlEYSvVi",  # Daft Punk
             "2NFrAuh8RQdQoS7iYFbckw",  # The Midnight
-            # "3MekbRujJg5VZThubOlrkR", # Ninajirachi (RATE NOT IN CACHE)
-            # "49tQo2QULno7gxHutgccqF", # LANY
-            # "3mIj9lX2MWuHmhNCA7LSCW", # The 1975
-            # "1N9JxmOPJqhMCw219uoEi8", # Atlas in Motion
-            # "6R1kfr0GIWnwxY4zW11Vag", # Frost Children (RATE NOT IN CACHE)
+            "3MekbRujJg5VZThubOlrkR",  # Ninajirachi
+            "49tQo2QULno7gxHutgccqF",  # LANY
+            "3mIj9lX2MWuHmhNCA7LSCW",  # The 1975
+            "1N9JxmOPJqhMCw219uoEi8",  # Atlas in Motion
+            "6R1kfr0GIWnwxY4zW11Vag",  # Frost Children
         ]
 
         df = collaboration.make_artist_df(artists, token)
-        network.make_pruned_network(df, "nx.html")
+        network.make_pruned_network(df, "nx.html", token)
         visualize_collaboration_counts(df)
 
 

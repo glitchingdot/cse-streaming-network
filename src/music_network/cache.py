@@ -34,19 +34,20 @@ def make_cached_call(
             return json.load(f)
     else:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
+        print(f"Loading {url} from Spotify!")
+        resp = requests.get(url=url, headers=headers, params=params)
+
+        if resp.status_code != 200:
+            print(f"Error {resp.status_code}: {resp.reason} on {url}")
+            return {
+                "Status Code": resp.status_code,
+                "Reason": resp.reason,
+                "URL": url,
+            }
+
+        data = resp.json()
+
         with open(cache_path, "w+") as f:
-            print(f"Loading {url} from Spotify!")
-            resp = requests.get(url=url, headers=headers, params=params)
-
-            if resp.status_code != 200:
-                print(f"Error {resp.status_code}: {resp.reason} on {url}")
-                return {
-                    "Status Code": resp.status_code,
-                    "Reason": resp.reason,
-                    "URL": url,
-                }
-
-            data = resp.json()
             json.dump(data, f)
 
-            return data
+        return data
